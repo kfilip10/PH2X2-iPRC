@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>iPRC: The Interactive Physics Reference Card</title>
+    <style>
+        /* Popup styling */
+        #equationPopup {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid black;
+            padding: 10px;
+            z-index: 1000;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            color: red;
+        }
+    </style>
+    <!-- MathJax for rendering LaTeX -->
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <h1>iPRC: The Interactive Physics Reference Card</h1>
+    <h3>
+        <p><span style="color:red">YOU WILL NOT HAVE THIS VERSION OF THE PRC ON ANY EXAM</span> </p>
+    </h3>
+
+
+    <!-- Container for the SVG -->
+    <div id="prcFront"></div>
+    <div id="prcBack"></div>
+    <p> The back of the PRC was added thanks to a Cadet recommendation (thanks Cory).
+        To suggest additional improvements email: <a href="mailto:kevin.filip@westpoint.edu">kevin.filip@westpoint.edu</a>
+    </p>
+    <!-- Popup for displaying LaTeX equations -->
+    <div id="equationPopup">
+        <span class="close-btn" onclick="closePopup()">Close X</span>
+        <div id="latexContent"></div>
+    </div>
+
+    <script>
+        // Function to load and display LaTeX content
+        function loadContent(filename, event, column) {
+            fetch(filename)
+                .then(response => response.text())
+                .then(content => {
+                    showPopup(content, event, column);
+                })
+                .catch(err => console.error('Error loading content:', err));
+        }
+
+        // Function to show the popup
+        function showPopup(content, event, column) {
+            var popup = document.getElementById('equationPopup');
+            var latexContainer = document.getElementById('latexContent');
+
+            // Set the content
+            latexContainer.innerHTML = content;
+            popup.style.display = 'block';
+            var offset_y = 30;
+
+            if (column == "left" | column == "middle") {
+                offset_x = 0;
+                popup.style.top = (event.pageY + offset_y) + 'px';
+                popup.style.left = (event.pageX + offset_x) + 'px';
+            }
+            else {
+                // Calculate the center position
+                var viewportHeight = window.innerHeight;
+                var viewportWidth = window.innerWidth;
+                var popupHeight = popup.offsetHeight;
+                var popupWidth = popup.offsetWidth;
+
+                popup.style.top = (event.pageY + offset_y) + 'px';
+                popup.style.left = (viewportWidth / 2.5 - popupWidth) + 'px';
+
+            }
+
+
+            // Position the popup
+
+
+            // Render LaTeX
+            MathJax.typesetPromise();
+        }
+
+        // Function to close the popup
+        function closePopup() {
+            document.getElementById('equationPopup').style.display = 'none';
+        }
+        // Function to initialize rectangle attributes
+        function initializeRectangle(area) {
+            area.style.fill = 'transparent'; // Original state
+            area.style.stroke = 'none';
+            area.style.cursor = 'pointer';                  // Optional: change cursor on hover
+        }
+        // Functions to handle hover effects
+        function addHoverEffect(area) {
+            area.style.fill = 'rgba(255, 215, 0, 0.25)'; // Gold with transparency
+            //area.style.stroke = 'black';
+            //area.style.strokeWidth = '2px';
+        }
+
+        function removeHoverEffect(area) {
+            area.style.fill = 'transparent'; // Original state
+            area.style.stroke = 'none';
+        }
+        function initializeClickableArea(svgElement, areaId, contentUrl, column) {
+            var clickableArea = svgElement.getElementById(areaId);
+            console.log('Initializing clickable area:', areaId, clickableArea);
+            if (clickableArea) {
+                initializeRectangle(clickableArea);
+                clickableArea.addEventListener('click', function (event) {
+                    loadContent(contentUrl, event, column);
+                });
+                clickableArea.addEventListener('mouseover', function () {
+                    addHoverEffect(clickableArea);
+                });
+                clickableArea.addEventListener('mouseout', function () {
+                    removeHoverEffect(clickableArea);
+                });
+            } else {
+                console.warn('Clickable area ' + areaId + ' not found in SVG.');
+            }
+        }
+        // Fetch and embed the SVG
+        fetch('img/prc_front.svg')
+            .then(response => response.text())
+            .then(svgText => {
+                // Insert SVG into the DOM
+                document.getElementById('prcFront').innerHTML = svgText;
+
+                // Get the SVG element
+                var svgElement = document.getElementById('prcFront').querySelector('svg');
+
+                // Ensure SVG is properly namespaced
+                if (!svgElement) {
+                    console.error('SVG element not found');
+                    return;
+                }
+                initializeClickableArea(svgElement, 'prc-1', 'equations/Electrostatics/Coulomb\'s Law.html','Left');
+                initializeClickableArea(svgElement, 'prc-2', 'equations/Electrostatics/Electric Force.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-3', 'equations/Electrostatics/Electric Field.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-4', 'equations/Electrostatics/Electric Potential Energy.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-5', 'equations/Electrostatics/Potential-Potential Energy.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-6', 'equations/Electrostatics/Electric Potential.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-7', 'equations/Electrostatics/Potential Difference.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-8', 'equations/Electrostatics/Electric Field Gradient.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-9', 'equations/Electrostatics/Infinitesimal Electric Field.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-10', 'equations/Electrostatics/Linear Charge Density.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-11', 'equations/Electrostatics/Surface Charge Density.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-12', 'equations/Electrostatics/Volume Charge Density.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-13', 'equations/Electrostatics/Electric Flux.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-14', 'equations/Electrostatics/Gauss\'s Law.html','Left');
+                initializeClickableArea(svgElement, 'prc-15', 'equations/Magnetism/Magnetic Force (on a charge).html', 'Left');
+                initializeClickableArea(svgElement, 'prc-16', 'equations/Magnetism/Magnetic Force (on a wire).html', 'Left');
+                initializeClickableArea(svgElement, 'prc-17', 'equations/Magnetism/Magnetic Moment.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-18', 'equations/Magnetism/Torque.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-19', 'equations/Magnetism/Magnetic Field (Biot-Savart).html', 'Left');
+                initializeClickableArea(svgElement, 'prc-20', 'equations/Magnetism/Ampere\'s Law.html','Left');
+                initializeClickableArea(svgElement, 'prc-21', 'equations/Magnetism/Magnetic Field (Straight Wire).html', 'Left');
+                initializeClickableArea(svgElement, 'prc-22', 'equations/Magnetism/Magnetic Field (Solenoid).html', 'Left');
+                initializeClickableArea(svgElement, 'prc-23', 'equations/Magnetism/Magnetic Flux.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-24', 'equations/Magnetism/Faraday\'s Law.html','Left');
+                initializeClickableArea(svgElement, 'prc-25', 'equations/DC Circuits/Current.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-26', 'equations/DC Circuits/Resistance.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-27', 'equations/DC Circuits/Ohm\'s Law.html','Left');
+                initializeClickableArea(svgElement, 'prc-28', 'equations/DC Circuits/Power.html', 'Left');
+                initializeClickableArea(svgElement, 'prc-29', 'equations/DC Circuits/Equivalent Resistance (Series).html', 'Left');
+                initializeClickableArea(svgElement, 'prc-30', 'equations/DC Circuits/Equivalent Resistance (Parallel).html', 'Left');
+                initializeClickableArea(svgElement, 'prc-31', 'equations/DC Circuits/Kirchhoff\'s Current Law.html','middle');
+                initializeClickableArea(svgElement, 'prc-32', 'equations/DC Circuits/Kirchhoff\'s Voltage Law.html','middle');
+                initializeClickableArea(svgElement, 'prc-33', 'equations/DC Circuits/Capacitance (Basic).html', 'middle');
+                initializeClickableArea(svgElement, 'prc-34', 'equations/DC Circuits/Capacitance (Parallel Plate).html', 'middle');
+                initializeClickableArea(svgElement, 'prc-35', 'equations/DC Circuits/Equivalent Capacitance (Series).html', 'middle');
+                initializeClickableArea(svgElement, 'prc-36', 'equations/DC Circuits/Equivalent Capacitance (Parallel).html', 'middle');
+                initializeClickableArea(svgElement, 'prc-37', 'equations/DC Circuits/Energy Stored in Capacitor.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-38', 'equations/DC Circuits/Charging of Capacitor.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-39', 'equations/DC Circuits/Discharging of Capacitor.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-40', 'equations/DC Circuits/Time Constant.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-41', 'equations/AC Circuits/Inductance (Flux-based).html', 'middle');
+                initializeClickableArea(svgElement, 'prc-42', 'equations/AC Circuits/Inductance (Solenoid).html', 'middle');
+                initializeClickableArea(svgElement, 'prc-43', 'equations/AC Circuits/EMF in Inductor.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-44', 'equations/AC Circuits/Energy in Inductor.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-45', 'equations/AC Circuits/Charge in AC Circuit.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-46', 'equations/AC Circuits/Angular Frequency (LC Circuit).html', 'middle');
+                initializeClickableArea(svgElement, 'prc-47', 'equations/AC Circuits/Angular Frequency (frequency).html', 'middle');
+                initializeClickableArea(svgElement, 'prc-48', 'equations/AC Circuits/Voltage in AC Circuit.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-49', 'equations/AC Circuits/Capacitive Reactance.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-50', 'equations/AC Circuits/Inductive Reactance.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-51', 'equations/AC Circuits/Impedance.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-52', 'equations/AC Circuits/RMS Voltage.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-53', 'equations/AC Circuits/RMS Voltage (Peak Voltage).html', 'middle');
+                initializeClickableArea(svgElement, 'prc-54', 'equations/AC Circuits/RMS Current (Peak Current).html', 'middle');
+                initializeClickableArea(svgElement, 'prc-55', 'equations/AC Circuits/Phase Angle.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-56', 'equations/AC Circuits/Average Power.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-57', 'equations/AC Circuits/Average Power (General).html', 'middle');
+                initializeClickableArea(svgElement, 'prc-58', 'equations/AC Circuits/Transformer Voltage Ratio.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-59', 'equations/AC Circuits/Transformer Current Ratio.html', 'middle');
+                initializeClickableArea(svgElement, 'prc-60', 'equations/Waves Optics/Electric Field Wave.html', 'right');
+                initializeClickableArea(svgElement, 'prc-61', 'equations/Waves Optics/Magnetic Field Wave.html', 'right');
+                initializeClickableArea(svgElement, 'prc-62', 'equations/Waves Optics/Wave Number.html', 'right');
+                initializeClickableArea(svgElement, 'prc-63', 'equations/Waves Optics/Angular Frequency (period).html', 'right');
+                initializeClickableArea(svgElement, 'prc-64', 'equations/Waves Optics/Wave Speed 1.html', 'right');
+                initializeClickableArea(svgElement, 'prc-65', 'equations/Waves Optics/Wave Speed 2.html', 'right');
+                initializeClickableArea(svgElement, 'prc-66', 'equations/Waves Optics/Speed of Light.html', 'right');
+                initializeClickableArea(svgElement, 'prc-67', 'equations/Waves Optics/Intensity (Electric).html', 'right');
+                initializeClickableArea(svgElement, 'prc-68', 'equations/Waves Optics/Intensity (Average).html', 'right');
+                initializeClickableArea(svgElement, 'prc-69', 'equations/Waves Optics/Intensity (Power per Area).html', 'right');
+                initializeClickableArea(svgElement, 'prc-70', 'equations/Waves Optics/Snells Law.html', 'right');
+                initializeClickableArea(svgElement, 'prc-71', 'equations/Waves Optics/Refractive Index.html', 'right');
+                initializeClickableArea(svgElement, 'prc-72', 'equations/Waves Optics/Wavelength in Medium.html', 'right');
+                initializeClickableArea(svgElement, 'prc-73', 'equations/Waves Optics/Critical Angle.html', 'right');
+                initializeClickableArea(svgElement, 'prc-74', 'equations/Waves Optics/Thin Lens Equation.html', 'right');
+                initializeClickableArea(svgElement, 'prc-75', 'equations/Waves Optics/Focal Length (Mirror).html', 'right');
+                initializeClickableArea(svgElement, 'prc-76', 'equations/Waves Optics/Magnification (distance).html', 'right');
+                initializeClickableArea(svgElement, 'prc-77', 'equations/Waves Optics/Magnification (height).html', 'right');
+                initializeClickableArea(svgElement, 'prc-78', 'equations/Waves Optics/Intensity (Polarization).html', 'right');
+                initializeClickableArea(svgElement, 'prc-79', 'equations/Waves Optics/Intensity (Angle Dependence).html', 'right');
+                initializeClickableArea(svgElement, 'prc-80', 'equations/Waves Optics/Brewsters Angle.html', 'right');
+                initializeClickableArea(svgElement, 'prc-81', 'equations/Waves Optics/Diffraction (Maxima).html', 'right');
+                initializeClickableArea(svgElement, 'prc-82', 'equations/Waves Optics/Diffraction (Minima).html', 'right');
+                initializeClickableArea(svgElement, 'prc-83', 'equations/Waves Optics/Double-Slit Interference.html', 'right');
+                initializeClickableArea(svgElement, 'prc-84', 'equations/Waves Optics/Film Thickness (Interference).html', 'right');
+                initializeClickableArea(svgElement, 'prc-85', 'equations/Waves Optics/Rayleighs Criteria.html', 'right');
+                initializeClickableArea(svgElement, 'prc-86', 'equations/Modern Physics/Energy of a Photon.html', 'right');
+                initializeClickableArea(svgElement, 'prc-87', 'equations/Modern Physics/Wavelength-Momentum Relation.html', 'right');
+                initializeClickableArea(svgElement, 'prc-88', 'equations/Modern Physics/Wiens Displacement Law.html', 'right');
+                initializeClickableArea(svgElement, 'prc-89', 'equations/Modern Physics/Maximum Kinetic Energy.html', 'right');
+                initializeClickableArea(svgElement, 'prc-90', 'equations/Modern Physics/Rydberg Formula.html', 'right');
+
+
+
+            })
+            .catch(err => console.error('Error loading SVG:', err));
+
+        fetch('img/prc_back.svg')
+                .then(response => response.text())
+                .then(svgText => {
+                    document.getElementById('prcBack').innerHTML = svgText;
+                    var newSvgElement = document.getElementById('prcBack').querySelector('svg');
+                    if (!newSvgElement) {
+                        console.error('New SVG element not found');
+                        return;
+                    }
+                    // Initialize clickable areas for the new SVG if needed
+                    // initializeClickableArea(newSvgElement, 'new-area-1', 'some-url.html', 'left');
+                });
+    </script>
+    <h3>
+        <p><span style="color:red">YOU WILL NOT HAVE THIS VERSION OF THE PRC ON ANY EXAM</span> </p>
+    </h3>
+</body>
+
+</html>
