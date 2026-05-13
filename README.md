@@ -1,0 +1,12 @@
+# Creating an iPRC
+1. Take the PDF of the equation card and import PDF into inkscape using 'Cairo' settings. The goal is to have an svg format of your equation card in an editor that allows creating boxes (which Inkscape provides).
+2. Draw a rectangle roughly the size of an equation. Change the fill to white with 75% alpha (so you can see below it). Right click the rectangle and select 'object properties'. Label the ID: prc-1. This html box will then be callable by that ID number. I have the highlight color of the box set to gray, in HSL that is: H:0, S: 0, L:67, Alpha:100. In RGBaf that is code:aaaaaaff. That will not matter for deployment, but helps when editing. I have the rectangle on the foreground above the prc equation because the rectangle needs to be visible when you hover over it.
+   1. The rectangle highlight color is defined in the index.html file in the 'addHoverEffect' function which defines it as gold with 25% transparency.
+3. Repeat making rectangles for each equation. The rectangle name should follow that naming convention so that the index.html can call up the correct equation based on its numbered rectangle and the equation name in the equations folder. Those relationships are mappedin the index.html file as 'initializeClickableArea' functions.
+4. Now create a new html file to reference equation 1. You can follow the template given in the github. Then you reference the clickable area to the equation html for display in the index.html file where each PRC equation has a defined relationship.
+5. Repeat for all equations. 
+6. In VS Code you can right click the html and run 'open with live server' to test in a non-deployed environment for functionality.
+7. The index.html can further define how the popups are called, their offset, and their column (so that it stays on the screen), amongst other properties. Feel free to tinker in the live server.
+8. After you get it working locally package your files as a repo (like this one).
+9. Then you can host a static webpage through your provider of choice. I chose netlifly. I was able to link the repo, deploy, and it constantly monitors for changes to the repo. If I change my iPRC repo the change posts to the website within 3-5 mins. 
+10. You can gather website view metrics from netlifly down to the exact equation being opened. It only goes 30 days back though and is not in an exportable format, so you will need to do some manual data logging if you want to explore trends.
